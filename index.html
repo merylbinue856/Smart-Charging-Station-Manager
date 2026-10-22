@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Smart Charging Station Manager - a Data Structures mini project">
+  <title>VoltDesk | Smart Charging Station Manager</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">ϟ</div><div><strong>VoltDesk</strong><span>CHARGING OS</span></div></div>
+      <div class="side-label">WORKSPACE</div>
+      <button class="nav-item active" data-view="overview"><span>▦</span> Overview</button>
+      <button class="nav-item" data-view="vehicles"><span>▤</span> Vehicle manager</button>
+      <button class="nav-item" data-view="queue"><span>☷</span> Waiting queue <b id="queueBadge">0</b></button>
+      <div class="side-bottom"><div class="side-status"><span class="pulse"></span><div><b>System operational</b><small>Local demo environment</small></div></div><div class="profile"><div class="avatar">MB</div><div><b>Meryl Binu</b><small>Station administrator</small></div><span class="dots">•••</span></div></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div><div class="eyebrow">STATION CONTROL / <span id="crumb">OVERVIEW</span></div><h1 id="pageTitle">Charging overview</h1></div><div class="top-actions"><span class="live-pill"><i></i> LIVE DEMO</span><button class="icon-btn" id="resetBtn" title="Reset demo data">↻</button><div class="date-chip" id="todayDate">Today</div></div></header>
+      <section id="overviewView">
+        <div class="welcome"><div><p class="eyebrow light">SMART CHARGING STATION MANAGER</p><h2>Powering every journey.</h2><p>Monitor your charging slots, manage arrivals, and keep vehicles moving.</p></div><div class="welcome-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="car">EV</div><div class="bolt">ϟ</div></div></div>
+        <div class="stats-grid">
+          <article class="stat-card"><div class="stat-top"><span>Total charging slots</span><span class="stat-icon purple">▦</span></div><div class="stat-number" id="totalSlots">6</div><div class="stat-foot">Station capacity</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Available slots</span><span class="stat-icon green">✓</span></div><div class="stat-number" id="availableSlots">2</div><div class="stat-foot"><span class="green-text">Ready</span> for incoming vehicles</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Currently charging</span><span class="stat-icon blue">ϟ</span></div><div class="stat-number" id="chargingCount">4</div><div class="stat-foot">Active charging sessions</div></article>
+          <article class="stat-card"><div class="stat-top"><span>Vehicles waiting</span><span class="stat-icon amber">☷</span></div><div class="stat-number" id="waitingCount">2</div><div class="stat-foot">Served in FIFO order</div></article>
+        </div>
+        <div class="section-heading"><div><h3>Charging station</h3><p>Slot availability and session progress</p></div><button class="text-btn" id="addVehicleTop">＋ Register vehicle</button></div>
+        <div class="slots-grid" id="slotsGrid"></div>
+        <div class="bottom-grid">
+          <section class="panel"><div class="panel-heading"><div><h3>Waiting queue</h3><p>First in, first out (FIFO)</p></div><span class="tiny-tag">QUEUE</span></div><div id="queuePreview" class="queue-list"></div><button class="panel-link" data-view="queue">View full queue →</button></section>
+          <section class="panel"><div class="panel-heading"><div><h3>Recent activity</h3><p>Latest station events</p></div><span class="tiny-tag">ACTIVITY</span></div><div id="activityList" class="activity-list"></div></section>
+        </div>
+      </section>
+      <section id="vehiclesView" class="hidden">
+        <div class="page-intro"><div><h2>Vehicle manager</h2><p>Register a vehicle, allocate a slot, or find an existing record.</p></div></div>
+        <div class="manager-layout">
+          <section class="panel form-panel"><div class="panel-heading"><div><h3>Register vehicle</h3><p>Add a vehicle to the station</p></div><span class="stat-icon green">＋</span></div>
+            <form id="vehicleForm">
+              <label for="vehicleNo">Vehicle registration number</label><input id="vehicleNo" placeholder="e.g. KL 05 AB 1234" required maxlength="20">
+              <div class="form-row"><div><label for="battery">Battery level (%)</label><input id="battery" type="number" min="0" max="99" value="25" required></div><div><label for="capacity">Battery capacity (kWh)</label><input id="capacity" type="number" min="1" max="200" value="50" required></div></div>
+              <label for="rate">Charging rate (kW)</label><select id="rate"><option value="7">7 kW · Standard</option><option value="22">22 kW · Fast</option><option value="50">50 kW · Rapid</option></select>
+              <label for="priority">Priority</label><select id="priority"><option value="normal">Normal</option><option value="high">High priority (low battery)</option></select>
+              <button class="primary-btn full" type="submit">＋ Register & allocate</button><p class="form-note">If all slots are occupied, the vehicle joins the FIFO waiting queue.</p>
+            </form>
+          </section>
+          <section class="panel"><div class="panel-heading"><div><h3>Vehicle records</h3><p>Search and manage registered vehicles</p></div><span class="tiny-tag" id="recordCount">0 RECORDS</span></div><div class="search-wrap"><span>⌕</span><input id="searchInput" placeholder="Search registration number or status..."></div><div class="table-wrap"><table><thead><tr><th>VEHICLE</th><th>BATTERY</th><th>STATUS</th><th>SLOT</th><th>ACTION</th></tr></thead><tbody id="vehicleTable"></tbody></table></div></section>
+        </div>
+      </section>
+      <section id="queueView" class="hidden">
+        <div class="page-intro"><div><h2>Waiting queue</h2><p>Vehicles are allocated in the order they arrive, following FIFO.</p></div><span class="fifo-label">FIRST IN → FIRST OUT</span></div>
+        <div class="queue-summary"><div><span>Vehicles in queue</span><b id="queueTotal">0</b></div><div><span>Estimated queue energy</span><b id="queueEnergy">0 kWh</b></div><div><span>Next vehicle</span><b id="nextVehicle">—</b></div></div>
+        <section class="panel"><div class="panel-heading"><div><h3>Queue sequence</h3><p>The first vehicle in line receives the next free slot.</p></div><span class="tiny-tag">FIFO ORDER</span></div><div id="fullQueue" class="full-queue"></div></section>
+      </section>
+      <footer>VoltDesk · Smart Charging Station Manager <span>Data Structures Mini Project · Browser-based prototype</span></footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="script.js"></script>
+</body>
+</html>
